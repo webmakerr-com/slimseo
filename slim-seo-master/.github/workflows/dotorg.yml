@@ -1,0 +1,35 @@
+name: Deploy to WordPress.org
+on:
+  push:
+    tags:
+    - "*"
+jobs:
+  tag:
+    name: New tag
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_KEY }}
+        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS_SLIM_SEO }}
+    - uses: actions/checkout@master
+    - name: Install PHP dependencies
+      run: composer install --no-dev
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+    - name: Install NPM dependencies
+      run: pnpm install
+    - name: Build Javascript
+      run: pnpm run build
+    - name: WordPress Plugin Deploy
+      uses: 10up/action-wordpress-plugin-deploy@master
+      env:
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+    - name: Notify Slack
+      run: |
+        tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        curl -X POST --data-urlencode "payload={\"channel\": \"#slim-seo\", \"username\": \"Bot\", \"text\": \"New version $tag for Slim SEO has been just released!\", \"icon_emoji\": \":tada:\"}" ${{ secrets.SLACK_WEBHOOK }}
