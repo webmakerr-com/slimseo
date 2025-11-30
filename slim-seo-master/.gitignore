@@ -5,7 +5,6 @@ Thumbs.db
 .idea
 
 node_modules
-vendor
 *.LICENSE.txt
 
 css/admin-columns.css
