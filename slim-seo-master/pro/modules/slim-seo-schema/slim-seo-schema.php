@@ -1,12 +1,13 @@
 <?php
 /**
- * Plugin Name: Slim SEO
+ * Plugin Name: Slim SEO Schema
  * Plugin URI:  https://wpslimseo.com/?utm_source=plugin_links&utm_medium=link&utm_campaign=slim_seo
- * Description: A fast and automated SEO plugin for WordPress.
+ * Description: A schema builder plugin for WordPress.
  * Author:      Slim SEO
  * Author URI:  https://wpslimseo.com/?utm_source=plugin_links&utm_medium=link&utm_campaign=slim_seo
- * Version:     4.7.3
- * License:     GPL v3
+ * Version:     2.9.0
+ * Text Domain: slim-seo-schema
+ * Domain Path: /languages/
  *
  * Copyright (C) 2010-2025 Tran Ngoc Tuan Anh. All rights reserved.
  *
@@ -24,27 +25,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace SlimSEO;
-
 defined( 'ABSPATH' ) || die;
 
-define( 'SLIM_SEO_DIR', plugin_dir_path( __FILE__ ) );
-define( 'SLIM_SEO_URL', plugin_dir_url( __FILE__ ) );
-define( 'SLIM_SEO_REDIRECTS', 'ss_redirects' );
-define( 'SLIM_SEO_DELETE_404_LOGS_ACTION', 'delete_404_logs' );
-define( 'SLIM_SEO_VER', '4.7.3' );
-define( 'SLIM_SEO_DB_VER', 1 );
+add_action( 'plugins_loaded', function () {
+	if ( ! defined( 'SLIM_SEO_SCHEMA_URL' ) ) {
+		define( 'SLIM_SEO_SCHEMA_URL', plugin_dir_url( __FILE__ ) );
+	}
 
-require __DIR__ . '/vendor/autoload.php';
+	if ( ! defined( 'SLIM_SEO_SCHEMA_DIR' ) ) {
+		define( 'SLIM_SEO_SCHEMA_DIR', __DIR__ );
+	}
 
-new Activator( __FILE__ );
-new Deactivator( __FILE__ );
-
-$slim_seo = new Container();
-$slim_seo->register_services();
-
-// Initialize at priority 5 to be able to disable core sitemaps completely which runs at priority 10.
-add_action( 'init', [ $slim_seo, 'init' ], 5 );
-
-require __DIR__ . '/pro/slim-seo-pro.php';
-require __DIR__ . '/schema/slim-seo-schema.php';
+	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+		require __DIR__ . '/vendor/autoload.php';
+	}
+	require __DIR__ . '/bootstrap.php';
+} );

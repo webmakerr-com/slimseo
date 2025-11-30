@@ -15,3 +15,13 @@ delete_option( 'ss_redirection_db_version' );
 global $wpdb;
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}slim_seo_404" );
+
+// Remove data installed by Slim SEO Pro modules.
+if ( file_exists( __DIR__ . '/pro/uninstall.php' ) ) {
+        require __DIR__ . '/pro/uninstall.php';
+}
+
+// Remove data installed by Slim SEO Schema when bundled.
+if ( file_exists( __DIR__ . '/schema/uninstall.php' ) ) {
+        require __DIR__ . '/schema/uninstall.php';
+}
